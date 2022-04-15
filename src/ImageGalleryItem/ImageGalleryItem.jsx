@@ -1,7 +1,17 @@
-export const ImageGalleryItem = () => {
+import { StyledImageGalleryItem } from './ImageGalleryItem.styled';
+import { StyledImage } from './ImageGalleryItem.styled';
+export const ImageGalleryItem = ({ images }) => {
   return (
-    <li className="gallery-item">
-      <img src="" alt="" />
-    </li>
+    <>
+      {images.map(image => (
+        <StyledImageGalleryItem key={image.id}>
+          <StyledImage
+            src={image.webformatURL}
+            data-src={image.largeImageURL}
+            alt={image.id}
+          />
+        </StyledImageGalleryItem>
+      ))}
+    </>
   );
 };

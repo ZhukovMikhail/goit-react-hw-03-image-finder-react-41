@@ -1,16 +1,10 @@
-// import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
+import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
+import { StyledImgGallery } from './ImageGallery.styled';
 
-export const ImageGallery = ({ images }) => {
-  console.log(images);
+export const ImageGallery = ({ images, click }) => {
   return (
-    <ul className="gallery">
-      {images.map(image => (
-        <li key={image.id}>
-          <img src={image.webformatURL} alt={image.id} />
-        </li>
-      ))}
-    </ul>
+    <StyledImgGallery onClick={click}>
+      <ImageGalleryItem images={images} />
+    </StyledImgGallery>
   );
 };
-
-/* <ImageGalleryItem /> */

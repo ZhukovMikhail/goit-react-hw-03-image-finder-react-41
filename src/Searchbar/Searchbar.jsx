@@ -1,9 +1,22 @@
 import React, { Component } from 'react';
+import { StyledSearchBar, StyledForm } from './SearchBar.styled';
+import { ImSearch } from 'react-icons/im';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export class Searchbar extends Component {
+export class SearchBar extends Component {
   state = {
     query: '',
   };
+  notify = () =>
+    toast.warn(' No data entered', {
+      position: 'top-center',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
   onInputChange = e => {
     this.setState({
       query: e.currentTarget.value,
@@ -11,18 +24,20 @@ export class Searchbar extends Component {
   };
   onSubmit = e => {
     e.preventDefault();
-    console.log('Click');
-    console.log('this.state.query', this.state.query);
+    if (this.state.query.trim() === '') {
+      return this.notify();
+    }
     this.props.query(this.state.query);
   };
   render() {
     return (
-      <header className="searchbar">
-        <form className="form" onSubmit={this.onSubmit}>
+      <StyledSearchBar className="searchbar">
+        <ToastContainer />
+        <StyledForm className="form" onSubmit={this.onSubmit}>
           <button type="submit" className="button">
             <span className="button-label">Search</span>
+            <ImSearch />
           </button>
-
           <input
             className="input"
             type="text"
@@ -32,8 +47,8 @@ export class Searchbar extends Component {
             onChange={this.onInputChange}
             value={this.state.query}
           />
-        </form>
-      </header>
+        </StyledForm>
+      </StyledSearchBar>
     );
   }
 }
