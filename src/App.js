@@ -58,6 +58,7 @@ export class App extends Component {
         query: query,
         images: data.hits,
         totalHits: data.totalHits,
+        error: false,
       });
       this.state.totalHits === 0 && this.notify();
     } catch (error) {
