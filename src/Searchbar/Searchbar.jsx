@@ -31,15 +31,14 @@ export class SearchBar extends Component {
   };
   render() {
     return (
-      <StyledSearchBar className="searchbar">
+      <StyledSearchBar>
         <ToastContainer />
-        <StyledForm className="form" onSubmit={this.onSubmit}>
-          <button type="submit" className="button">
-            <span className="button-label">Search</span>
+        <StyledForm onSubmit={this.onSubmit}>
+          <button type="submit">
+            <span>Search</span>
             <ImSearch />
           </button>
           <input
-            className="input"
             type="text"
             autoComplete="off"
             autoFocus

@@ -6,6 +6,8 @@ import { getImage } from './api/service';
 import { Modal } from './Modal/Modal.jsx';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import Loader from 'react-loader-spinner';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export class App extends Component {
   state = {
@@ -17,7 +19,17 @@ export class App extends Component {
     error: false,
     modalIsOpen: false,
     largeImg: '',
+    totalHits: 0,
   };
+  notify = () =>
+    toast.error('No images found', {
+      position: 'top-center',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+    });
   toggleModal = () => {
     this.setState(prev => ({
       modalIsOpen: !prev.modalIsOpen,
@@ -35,17 +47,19 @@ export class App extends Component {
     if (query === this.state.query) {
       return;
     } else {
-      this.setState({ images: [] });
+      this.setState({ images: [], page: 1 });
     }
     const page = this.state.page;
     const per_page = this.state.per_page;
     try {
       this.setState({ isLoading: true });
-      const pictures = await getImage(query, page, per_page);
-      this.setState(prev => ({
+      const data = await getImage(query, page, per_page);
+      this.setState({
         query: query,
-        images: [...prev.images, ...pictures],
-      }));
+        images: data.hits,
+        totalHits: data.totalHits,
+      });
+      this.state.totalHits === 0 && this.notify();
     } catch (error) {
       this.setState({ error });
     } finally {
@@ -65,12 +79,18 @@ export class App extends Component {
     if (prevState.page !== this.state.page) {
       try {
         this.setState({ isLoading: true });
-        const pictures = await getImage(this.state.query, this.state.page, _);
+        const data = await getImage(
+          this.state.query,
+          this.state.page,
+          this.state.per_page,
+        );
         this.setState(prev => ({
-          images: [...prev.images, ...pictures],
+          images: [...prev.images, ...data.hits],
+          totalHits: data.totalHits,
         }));
       } catch (error) {
-        this.setState({ error });
+        console.log(error);
+        this.setState({ error: error });
       } finally {
         console.log('finally');
         this.setState({ isLoading: false });
@@ -78,10 +98,17 @@ export class App extends Component {
     }
   }
   render() {
+    const loadMoreIsNeeded =
+      this.state.totalHits > this.state.page * this.state.per_page
+        ? true
+        : false;
+    // console.log('loadMoreIsNeeded', loadMoreIsNeeded);
     return (
       <>
         <SearchBar query={this.fetchImage} />
         <Container>
+          <ToastContainer />
+          {this.state.error && <h4>...Oops, something goes wrong!</h4>}
           <ImageGallery click={this.onImageClick} images={this.state.images} />
           {this.state.isLoading && (
             <>
@@ -95,7 +122,7 @@ export class App extends Component {
               <h3>...loading</h3>
             </>
           )}
-          {this.state.images.length !== 0 && (
+          {this.state.images.length !== 0 && loadMoreIsNeeded && (
             <StyledButton onClick={this.loadMore}>load More</StyledButton>
           )}
           {this.state.modalIsOpen && (
